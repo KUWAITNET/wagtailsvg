@@ -23,7 +23,8 @@ setup(
     keywords="wagtail svg",
     license='GPL-3.0',
     install_requires=[
-        'wagtail-generic-chooser==0.5.1'
+        'wagtail-generic-chooser==0.5.1',
+        'lxml==4.9.2',
     ],
     platforms=['linux'],
     packages=find_packages(),
