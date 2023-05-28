@@ -1,3 +1,4 @@
+from django.utils.translation import gettext_lazy as _
 from wagtail.contrib.modeladmin.options import (
     ModelAdmin,
     modeladmin_register
@@ -11,6 +12,10 @@ except ImportError:
 from wagtail.admin.site_summary import SummaryItem
 from wagtailsvg.views import SvgChooserViewSet
 from wagtailsvg.models import Svg
+from wagtailsvg.admin_views import (
+    DiwanSVGCreateView,
+    DiwanSVGEditView,
+)
 
 
 class SvgSummaryItem(SummaryItem):
@@ -35,10 +40,12 @@ def register_site_chooser_viewset():
 
 class SvgModelAdmin(ModelAdmin):
     model = Svg
-    menu_label = 'Svg'
+    menu_label = _('Svg')
     menu_icon = 'image'
     menu_order = 400
     add_to_settings_menu = False
+    create_view_class = DiwanSVGCreateView
+    edit_view_class = DiwanSVGEditView
     exclude_from_explorer = False
     list_display = ('title',)
     list_filter = ('collection__name',)
