@@ -12,6 +12,9 @@ except ImportError:
 from wagtail.admin.site_summary import SummaryItem
 from wagtailsvg.views import SvgChooserViewSet
 from wagtailsvg.models import Svg
+from wagtailsvg.admin_forms import (
+    GroupSvgPermissionFormSet,
+)
 from wagtailsvg.admin_views import (
     DiwanSVGCreateView,
     DiwanSVGEditView,
@@ -36,6 +39,11 @@ def add_svg_summary_item(request, items):
 @hooks.register('register_admin_viewset')
 def register_site_chooser_viewset():
     return SvgChooserViewSet('svg_chooser', url_prefix='svg-chooser')
+
+
+@hooks.register("register_group_permission_panel")
+def register_svg_permissions_panel():
+    return GroupSvgPermissionFormSet
 
 
 class SvgModelAdmin(ModelAdmin):
