@@ -38,9 +38,9 @@ class DiwanSvgForm(WagtailAdminModelForm):
 GroupSvgPermissionFormSet = collection_member_permission_formset_factory(
     Svg,
     [
-        ("add_svg", _("Add"), _("Add/edit images you own")),
-        ("change_svg", _("Edit"), _("Edit any image")),
-        ("choose_svg", _("Choose"), _("Select images in choosers")),
+        ("add_svg", _("Add"), _("Add/edit Svg you own")),
+        ("change_svg", _("Edit"), _("Edit Svg image")),
+        ("choose_svg", _("Choose"), _("Select Svg in choosers")),
     ],
     "wagtailsvg/permissions/includes/svg_permissions_formset.html",
 )

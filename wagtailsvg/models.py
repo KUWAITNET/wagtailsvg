@@ -61,3 +61,11 @@ class Svg(CollectionMember, index.Indexed, models.Model):
     @property
     def url(self):
         return self.file.url
+
+    class Meta:
+        verbose_name = _("Svg")
+        verbose_name_plural = _("Svg")
+
+        permissions = [
+            ("choose_svg", "Can choose Svg"),
+        ]
