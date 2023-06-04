@@ -1,5 +1,8 @@
 from io import BytesIO
+from django import forms
+from django.core.exceptions import ValidationError
 from django.core.files.images import File
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 
 from wagtail.admin.forms import (
@@ -11,11 +14,16 @@ from wagtail.admin.forms.collections import (
 
 from wagtailsvg.models import Svg
 from wagtailsvg.helpers import (
+    check_if_svg_clean_from_scripts,
     clear_svg_from_scripts,
 )
 
 
 class DiwanSvgForm(WagtailAdminModelForm):
+    clean_and_save = forms.BooleanField(
+        initial=False, required=False
+    )
+
     class Meta:
         model = Svg
         fields = [
@@ -24,14 +32,34 @@ class DiwanSvgForm(WagtailAdminModelForm):
 
     def clean(self):
         cleaned_data = super(DiwanSvgForm, self).clean()
-
         svg_file = cleaned_data.get("file")
-        cleaned_xml_bytes = clear_svg_from_scripts(svg_file)
+        clean_and_save = cleaned_data.get("clean_and_save")
 
-        cleaned_data["file"] = File(
-            file=BytesIO(cleaned_xml_bytes),
-            name=svg_file.name.split("/")[-1],
-        )
+        if not clean_and_save:
+            is_file_clean = check_if_svg_clean_from_scripts(svg_file)
+            if not is_file_clean:
+                error_msg = _(
+                    "Selected file has malicious scripts, We can not save it to avoid security issues"
+                    "<div class='help-text-line'>"
+                    "<span>we can remove malicious scripts from your file so you can use it </span>"
+                    f"<a id='cleanAndSaveBtn' class='btn btn-primary' data-file={svg_file}>"
+                    "Clean And Save File</a>"
+                    "</div>"
+                )
+
+                raise ValidationError({
+                    "file": format_html(error_msg)
+                })
+
+        else:
+            cleaned_xml_bytes = clear_svg_from_scripts(svg_file)
+            print(cleaned_xml_bytes)
+
+            cleaned_data["file"] = File(
+                file=BytesIO(cleaned_xml_bytes),
+                name=svg_file.name.split("/")[-1],
+            )
+
         return cleaned_data
 
 

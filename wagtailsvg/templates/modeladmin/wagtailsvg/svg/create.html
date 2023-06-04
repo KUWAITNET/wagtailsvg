@@ -1,1 +1,110 @@
 {% extends "modeladmin/create.html" %}
+{% load l10n i18n wagtailadmin_tags %}
+
+
+{% block content %}
+
+    {% block header %}
+        {% include "wagtailadmin/shared/header_with_locale_selector.html" with title=view.get_page_title subtitle=view.get_page_subtitle icon=view.header_icon merged=1 %}
+    {% endblock %}
+
+    <form id="createSvgForm">
+        {% csrf_token %}
+
+        <input name="clean_and_save" style="display: none" type="checkbox">
+        <div class="nice-padding">
+            {% block form %}{{ edit_handler.render_form_content }}{% endblock %}
+        </div>
+
+        {% block footer %}
+            <footer class="footer">
+                <ul>
+                    <li class="actions footer__container">
+                        {% block form_actions %}
+                            <div class="dropdown dropup dropdown-button match-width">
+                                <button id="createSvgFormSubmit" class="button action-save button-longrunning"
+                                        data-clicked-text="{% trans 'Saving…' %}">
+                                    {% icon name="spinner" %}<em>{% trans 'Save' %}</em>
+                                </button>
+                            </div>
+                        {% endblock %}
+                    </li>
+                </ul>
+            </footer>
+        {% endblock %}
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+    {{ super.block }}
+
+    <script>
+        $(document).ready(function () {
+            $("#id_file").attr("accept", ".{{ svg_extensions|join:", ." }}")
+            $('[id$="file-helptext"]').html(
+                "<span>{% trans "Supported formats:" %} {{ svg_extensions|join:", " }}. </span>" +
+                "<span>{% trans "Maximum file size:" %} {{ maximum_file_sizes.0 }}. </span>"
+            );
+
+            function saveForm(cleanAndSaveVal = false) {
+                let $createSvgForm = $("#createSvgForm");
+                $createSvgForm.find("[name=clean_and_save]").attr("checked", cleanAndSaveVal)
+                let formData = new FormData($createSvgForm[0]);
+
+                $.ajax({
+                    type: "POST",
+                    url: '{{ view.create_url }}',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+
+                    success: function (response) {
+                        alert("done")
+                    },
+
+                    error: function (response) {
+                        console.log(response.responseJSON)
+                        let responseErrors = response.responseJSON;
+                        reportErrorToUser(responseErrors.errors);
+
+                        $("#cleanAndSaveBtn").on("click", function () {
+                            saveForm(cleanAndSaveVal = true);
+                        })
+                    },
+                });
+            }
+
+            function reportErrorToUser(errors, $parentElem = null) {
+                if ($parentElem) {
+                    $parentElem.removeClass("error");
+                    $parentElem.find(".error-message").remove()
+                } else {
+                    $('.error-message').remove();
+                }
+                let backEndProblemFields = [];
+                for (let key in errors) {
+                    if (errors.hasOwnProperty(key)) {
+                        let $parentElem = $('[name=' + key + ']').parents(".w-panel ").find(".w-field__errors")
+                        $parentElem.append(
+                            '<p class="error-message">' + errors[key] + '</p'
+                        );
+                        backEndProblemFields.push($('[name=' + key + ']'))
+                    }
+                }
+
+                if (backEndProblemFields.length > 0) {
+                    scrollTo(backEndProblemFields[0]);
+                }
+            }
+
+            $("#cleanAndSaveBtn").on("click", function () {
+                saveForm(cleanAndSaveVal = true);
+            })
+
+            $("#createSvgFormSubmit").on("click", function (e) {
+                e.preventDefault()
+                saveForm();
+            })
+        })
+    </script>
+{% endblock %}
