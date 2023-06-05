@@ -19,6 +19,7 @@ class DiwanSVGCreateView(CreateView):
         form = self.get_form()
 
         if form.is_valid():
+            form.save()
             return JsonResponse(
                 {
                     "title": _("Success"),
@@ -47,6 +48,7 @@ class DiwanSVGEditView(EditView):
         form = self.get_form()
 
         if form.is_valid():
+            form.save()
             return JsonResponse(
                 {
                     "title": _("Success"),

@@ -34,10 +34,10 @@ class DiwanSvgForm(WagtailAdminModelForm):
         cleaned_data = super(DiwanSvgForm, self).clean()
         svg_file = cleaned_data.get("file")
         clean_and_save = cleaned_data.get("clean_and_save")
+        is_file_clean = check_if_svg_clean_from_scripts(svg_file)
 
-        if not clean_and_save:
-            is_file_clean = check_if_svg_clean_from_scripts(svg_file)
-            if not is_file_clean:
+        if not is_file_clean:
+            if not clean_and_save:
                 error_msg = _(
                     "Selected file has malicious scripts, We can not save it to avoid security issues"
                     "<div class='help-text-line'>"
@@ -51,12 +51,12 @@ class DiwanSvgForm(WagtailAdminModelForm):
                     "file": format_html(error_msg)
                 })
 
-        else:
-            cleaned_xml_bytes = clear_svg_from_scripts(svg_file)
-            cleaned_data["file"] = File(
-                file=BytesIO(cleaned_xml_bytes),
-                name=svg_file.name.split("/")[-1],
-            )
+            else:
+                cleaned_xml_bytes = clear_svg_from_scripts(svg_file)
+                cleaned_data["file"] = File(
+                    file=BytesIO(cleaned_xml_bytes),
+                    name=svg_file.name.split("/")[-1],
+                )
 
         return cleaned_data
 
