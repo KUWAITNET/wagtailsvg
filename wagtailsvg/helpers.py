@@ -40,8 +40,9 @@ def clear_svg_from_scripts(svg_file):
     if not svg_file:
         return True
 
-    file_xml = BeautifulSoup(svg_file, "xml")
-    for element in file_xml.find_all(["script", "html"]):
+    file_xml = BeautifulSoup(svg_file, "lxml-xml")
+
+    for element in file_xml.find_all(["script", "html", ]):
         element.decompose()
 
     for element in file_xml.find_all(True):
@@ -60,5 +61,4 @@ def clear_svg_from_scripts(svg_file):
         element.attrs = copy_attrs
 
     cleaned_xml_bytes = bytes(file_xml.prettify(), 'utf8')
-
     return cleaned_xml_bytes

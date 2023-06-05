@@ -59,11 +59,11 @@
                     processData: false,
 
                     success: function (response) {
-                        alert("done")
+                        let redirectedUrl = response["next_url"];
+                        window.location.href = redirectedUrl;
                     },
 
                     error: function (response) {
-                        console.log(response.responseJSON)
                         let responseErrors = response.responseJSON;
                         reportErrorToUser(responseErrors.errors);
 

@@ -53,8 +53,6 @@ class DiwanSvgForm(WagtailAdminModelForm):
 
         else:
             cleaned_xml_bytes = clear_svg_from_scripts(svg_file)
-            print(cleaned_xml_bytes)
-
             cleaned_data["file"] = File(
                 file=BytesIO(cleaned_xml_bytes),
                 name=svg_file.name.split("/")[-1],

@@ -1,5 +1,6 @@
 from django.http import JsonResponse
 from django.utils.translation import gettext as _
+from django.urls import reverse
 
 from wagtail.contrib.modeladmin.views import (
     CreateView,
@@ -18,8 +19,12 @@ class DiwanSVGCreateView(CreateView):
         form = self.get_form()
 
         if form.is_valid():
-            return super().post(request, *args, **kwargs)
-
+            return JsonResponse(
+                {
+                    "title": _("Success"),
+                    "next_url": reverse("wagtailsvg_svg_modeladmin_index"),
+                }, status=200,
+            )
         else:
             return JsonResponse(
                 {
@@ -38,3 +43,23 @@ class DiwanSVGEditView(EditView):
     def get_form_class(self):
         return DiwanSvgForm
 
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            return JsonResponse(
+                {
+                    "title": _("Success"),
+                    "next_url": reverse("wagtailsvg_svg_modeladmin_index"),
+                }, status=200,
+            )
+        else:
+            return JsonResponse(
+                {
+                    "title": _("Failed"),
+                    "message": _(
+                        "The Svg could not be edited due to errors."
+                    ),
+                    "errors": form.errors,
+                }, status=400,
+            )
