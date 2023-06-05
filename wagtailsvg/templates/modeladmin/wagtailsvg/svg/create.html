@@ -40,6 +40,8 @@
 
     <script>
         $(document).ready(function () {
+            let $svgFormSubmitBtn = $("#createSvgFormSubmit");
+
             $("#id_file").attr("accept", ".{{ svg_extensions|join:", ." }}")
             $('[id$="file-helptext"]').html(
                 "<span>{% trans "Supported formats:" %} {{ svg_extensions|join:", " }}. </span>" +
@@ -49,6 +51,8 @@
             function saveForm(cleanAndSaveVal = false) {
                 let $createSvgForm = $("#createSvgForm");
                 $createSvgForm.find("[name=clean_and_save]").attr("checked", cleanAndSaveVal)
+
+                let postUrl = $createSvgForm.attr("data-post-url")
                 let formData = new FormData($createSvgForm[0]);
 
                 $.ajax({
@@ -64,8 +68,8 @@
                     },
 
                     error: function (response) {
-                        $("#createSvgFormSubmit").text('{% trans "Save" %}');
-                        $("#createSvgFormSubmit").attr("disabled", false);
+                        $svgFormSubmitBtn.text('{% trans "Save" %}');
+                        $svgFormSubmitBtn.attr("disabled", false);
 
                         let responseErrors = response.responseJSON;
                         reportErrorToUser(responseErrors.errors);
@@ -103,7 +107,7 @@
                 saveForm(cleanAndSaveVal = true);
             })
 
-            $("#createSvgFormSubmit").on("click", function (e) {
+            $svgFormSubmitBtn.on("click", function (e) {
                 e.preventDefault()
                 saveForm();
             })
