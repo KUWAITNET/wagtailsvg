@@ -64,6 +64,9 @@
                     },
 
                     error: function (response) {
+                        $("#createSvgFormSubmit").text('{% trans "Save" %}');
+                        $("#createSvgFormSubmit").attr("disabled", false);
+
                         let responseErrors = response.responseJSON;
                         reportErrorToUser(responseErrors.errors);
 
@@ -76,10 +79,9 @@
 
             function reportErrorToUser(errors, $parentElem = null) {
                 if ($parentElem) {
-                    $parentElem.removeClass("error");
-                    $parentElem.find(".error-message").remove()
+                    $parentElem.find(".w-field__errors").html("")
                 } else {
-                    $('.error-message').remove();
+                    $(".w-field__errors").html("")
                 }
                 let backEndProblemFields = [];
                 for (let key in errors) {

@@ -42,7 +42,7 @@ class DiwanSvgForm(WagtailAdminModelForm):
                     "Selected file has malicious scripts, We can not save it to avoid security issues"
                     "<div class='help-text-line'>"
                     "<span>we can remove malicious scripts from your file so you can use it </span>"
-                    f"<a id='cleanAndSaveBtn' class='btn btn-primary' data-file={svg_file}>"
+                    f"<a id='cleanAndSaveBtn' class='button button-small' style='margin:5px'>"
                     "Clean And Save File</a>"
                     "</div>"
                 )
